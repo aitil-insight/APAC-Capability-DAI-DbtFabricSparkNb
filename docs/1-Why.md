@@ -1,7 +1,7 @@
 
 # Objective of this project
 
-This project is the result of a search to find a tool that would accelerate the development and ongoing maintenance processes relating to data transformation activities within a software-as-a-service (SAAS) aligend lakehouse architecture and technology stack.
+This project is the result of a search to find a tool that would accelerate the development and ongoing maintenance processes relating to data transformation activities within a software-as-a-service (SAAS) alignd lakehouse architecture and technology stack.
 
 When designing this project the core, **"must have"** requirements were to:
 
