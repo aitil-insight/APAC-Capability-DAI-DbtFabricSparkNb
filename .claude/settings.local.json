@@ -3,7 +3,9 @@
     "allow": [
       "Bash(time python:*)",
       "Bash(python:*)",
-      "Bash(source:*)"
+      "Bash(source:*)",
+      "Bash(python3:*)",
+      "Bash(git log:*)"
     ],
     "deny": []
   }
