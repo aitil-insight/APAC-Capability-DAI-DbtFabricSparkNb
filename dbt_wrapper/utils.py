@@ -79,10 +79,10 @@ def UploadFileToLakehouse(progress: ProgressConsoleWrapper, task_id, workspace_n
     try:
         token_credential = DefaultAzureCredential()
         service_client = DataLakeServiceClient(account_url, credential=token_credential)
-        # File system is workspace name, directory path is lakehouse_name/Files/...
+        # File system is workspace name, directory path is lakehouse_name.Lakehouse/Files/...
         file_system_client = service_client.get_file_system_client(workspace_name)
-        # Construct the full path: lakehouse_name/Files
-        directory_path = f"{lakehouse_name}/Files"
+        # Construct the full path: lakehouse_name.Lakehouse/Files (OneLake naming convention)
+        directory_path = f"{lakehouse_name}.Lakehouse/Files"
         directory_client = file_system_client.get_directory_client(directory_path)
 
         # Upload the file
