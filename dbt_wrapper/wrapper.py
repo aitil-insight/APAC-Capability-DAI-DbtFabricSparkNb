@@ -141,7 +141,7 @@ class Commands:
         mn.UploadFileToLakehouse(
             progress=progress,
             task_id=task_id,
-            workspace_name=self.target_info['workspaceid'],
+            workspace_name=self.target_info['workspacename'],
             lakehouse_name=self.target_info['lakehouse'],
             local_file_path=manifest_path,
             remote_path='MetaExtracts/manifest.json'
