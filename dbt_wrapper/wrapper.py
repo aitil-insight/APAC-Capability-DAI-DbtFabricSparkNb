@@ -140,8 +140,6 @@ class Commands:
             raise Exception(f"Manifest not found at {manifest_path}. Run 'build' stage first.")
 
         progress.print("Uploading manifest.json to lakehouse", level=LogLevel.INFO)
-        print(self.target_info)
-        exit(1)
         # Upload manifest to lakehouse
         mn.UploadFileToLakehouse(
             progress=progress,
