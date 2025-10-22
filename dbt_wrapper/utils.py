@@ -62,25 +62,34 @@ def DownloadFiles(progress: ProgressConsoleWrapper, task_id, file_system_client:
 
 
 @staticmethod
-def UploadFileToLakehouse(progress: ProgressConsoleWrapper, task_id, workspacename: str, lakehouse_id: str, local_file_path: str, remote_path: str):
-    """Upload a single file to OneLake lakehouse"""
+def UploadFileToLakehouse(progress: ProgressConsoleWrapper, task_id, workspace_name: str, lakehouse_name: str, local_file_path: str, remote_path: str):
+    """Upload a single file to OneLake lakehouse
+
+    Args:
+        progress: Progress console wrapper for status updates
+        task_id: Task identifier for progress tracking
+        workspace_name: Name of the Fabric workspace
+        lakehouse_name: Name of the lakehouse
+        local_file_path: Local path to the file to upload
+        remote_path: Remote path within the lakehouse Files directory
+    """
     progress.progress.update(task_id=task_id, description=f"Uploading {os.path.basename(local_file_path)} to lakehouse...")
     account_name = "onelake"  # always this
     account_url = f"https://{account_name}.dfs.fabric.microsoft.com"
     try:
         token_credential = DefaultAzureCredential()
         service_client = DataLakeServiceClient(account_url, credential=token_credential)
-        # File system is workspace ID, directory path is lakehouseId/Files/...
-        file_system_client = service_client.get_file_system_client(workspacename)
-        # Construct the full path: lakehouseId/Files
-        directory_path = f"{lakehouse_id}/Files"
+        # File system is workspace name, directory path is lakehouse_name/Files/...
+        file_system_client = service_client.get_file_system_client(workspace_name)
+        # Construct the full path: lakehouse_name/Files
+        directory_path = f"{lakehouse_name}/Files"
         directory_client = file_system_client.get_directory_client(directory_path)
 
         # Upload the file
         UploadFile(progress, task_id, directory_client, local_file_path, remote_path)
         progress.progress.update(task_id=task_id, description=f"Completed upload of {os.path.basename(local_file_path)}")
     except Exception as e:
-        progress.progress.print(f"Error uploading file: Workspacename: {workspacename}, LakehouseId: {lakehouse_id}, LocalFile: {local_file_path}, RemotePath: {remote_path}")
+        progress.progress.print(f"Error uploading file: Workspace: {workspace_name}, Lakehouse: {lakehouse_name}, LocalFile: {local_file_path}, RemotePath: {remote_path}")
         raise e
 
 
