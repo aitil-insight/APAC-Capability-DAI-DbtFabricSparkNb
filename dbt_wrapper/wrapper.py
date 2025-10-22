@@ -30,7 +30,7 @@ class Commands:
         self.next_env = None
         self.next_env_name = None
     
-    def GetDbtConfigs(self, dbt_project_dir, dbt_profiles_dir=None, source_env=None, target_env=None):
+    def GetDbtConfigs(self, dbt_project_dir, dbt_profiles_dir=None, source_env=None, target_env=None, dbt_target=None):
         path = Path(dbt_project_dir.replace("\\", "/"))
         path_elements = path.parts
         num_elements = len(path_elements)
@@ -48,17 +48,21 @@ class Commands:
         self.dbt_project_dir = dbt_project_dir
         if (dbt_profiles_dir is not None):
             os.environ["DBT_PROFILES_DIR"] = dbt_profiles_dir
-            
+
         if (os.environ.get('DBT_PROFILES_DIR') is not None):
             profile_path = Path(os.environ['DBT_PROFILES_DIR'])
             self.console.print(profile_path, style="debug")
         else:
             profile_path = Path(os.path.expanduser('~')) / '.dbt/'
-        
+
         self.profile = dbtconfig.profile.read_profile(profile_path)
         self.config = dbtconfig.project.load_raw_project(self.dbt_project_dir)
         self.profile_info = self.profile[self.config['profile']]
-        self.target_info = self.profile_info['outputs'][self.profile_info['target']]
+
+        # Determine target with priority: parameter > env var > yaml default
+        target_name = dbt_target or os.environ.get('DBT_TARGET') or self.profile_info['target']
+        self.console.print(f"Using dbt target: {target_name}", style="debug")
+        self.target_info = self.profile_info['outputs'][target_name]
         self.lakehouse = self.target_info['lakehouse']
         if "sql_endpoint" in self.target_info.keys():
             self.sql_endpoint = self.target_info['sql_endpoint']
@@ -136,7 +140,8 @@ class Commands:
             raise Exception(f"Manifest not found at {manifest_path}. Run 'build' stage first.")
 
         progress.print("Uploading manifest.json to lakehouse", level=LogLevel.INFO)
-
+        print(self.target_info)
+        exit(1)
         # Upload manifest to lakehouse
         mn.UploadFileToLakehouse(
             progress=progress,

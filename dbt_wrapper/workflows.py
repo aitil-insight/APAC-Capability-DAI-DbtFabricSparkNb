@@ -185,43 +185,45 @@ class WorkflowManager:
         workflow_type: WorkflowType,
         dbt_project_dir: str,
         dbt_profiles_dir: Optional[str] = None,
+        dbt_target: Optional[str] = None,
         skip_stages: Optional[List[str]] = None,
         only_stages: Optional[List[str]] = None,
         select: str = "",
         exclude: str = "",
         pre_install: bool = False,
         **override_options,
-        
+
     ):
         """Execute a predefined workflow"""
         workflow = self.predefined_workflows.get(workflow_type)
         if not workflow:
             self.console.print(f"[error]Unknown workflow type: {workflow_type}[/error]")
             return
-        
+
         # Display workflow info
         self.console.print(f"\n[bold cyan]Running {workflow.name} Workflow[/bold cyan]")
         self.console.print(f"[dim]{workflow.description}[/dim]\n")
-        
+
         # Merge options with overrides
         options = {**workflow.options, **override_options}
-        
+
         # Filter stages based on skip/only parameters
         stages_to_run = self._filter_stages(
             workflow.stages,
             skip_stages,
             only_stages
         )
-        
+
         # Display stages to run
         self._display_stages_plan(stages_to_run)
-        
+
         # Initialize configurations
         self.wrapper_commands.GetDbtConfigs(
             dbt_project_dir=dbt_project_dir,
-            dbt_profiles_dir=dbt_profiles_dir
+            dbt_profiles_dir=dbt_profiles_dir,
+            dbt_target=dbt_target
         )
-        
+
         # Execute stages
         self._execute_stages(stages_to_run, options, select, exclude, pre_install)
     
